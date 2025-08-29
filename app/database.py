@@ -3,7 +3,7 @@ import psycopg
 from psycopg_pool import AsyncConnectionPool
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
-from app.config import settings
+from app.config import DATABASE_URL
 
 class DatabaseManager:
     def __init__(self):
@@ -17,7 +17,7 @@ class DatabaseManager:
         try:
             # Initialize pool without opening it automatically
             self.pool = AsyncConnectionPool(
-                conninfo=settings.database_url,
+                conninfo=DATABASE_URL,
                 min_size=1,
                 max_size=10,
                 open=False  # prevent automatic opening to avoid warnings
