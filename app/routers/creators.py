@@ -1,5 +1,5 @@
 # routers/creators.py
-from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File
+from fastapi import APIRouter, Depends, Form, status, UploadFile, File
 import asyncpg
 from typing import List, Optional
 
@@ -11,7 +11,7 @@ router = APIRouter()
 @router.post("/", response_model=schemas.Video, status_code=status.HTTP_201_CREATED,
              dependencies=[Depends(auth_utils.require_creator)])
 async def upload_video(
-    title: str,
+    title: str = Form(...),
     file: UploadFile = File(...),
     description: Optional[str] = None,
     thumbnail: Optional[UploadFile] = File(None),
@@ -26,7 +26,7 @@ async def upload_video(
     if thumbnail:
         # Upload thumbnail to blob storage
         thumbnail_blob_url = await blob_storage.upload_file_to_blob(thumbnail, file_type="thumbnail")
-    
+    print("got here")
     db_video = await crud.create_video(
         conn=conn,
         title=title,

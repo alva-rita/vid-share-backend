@@ -3,8 +3,15 @@ import os
 from azure.storage.blob.aio import BlobServiceClient, BlobClient, ContainerClient
 from fastapi import UploadFile
 import uuid
+from datetime import datetime, timedelta
+from azure.storage.blob import generate_blob_sas, BlobSasPermissions
 
-from app.config import AZURE_STORAGE_CONNECTION_STRING, AZURE_BLOB_CONTAINER_NAME
+from app.config import(
+    AZURE_STORAGE_ACCOUNT_NAME,
+    AZURE_STORAGE_ACCOUNT_KEY,
+    AZURE_STORAGE_CONNECTION_STRING,
+    AZURE_BLOB_CONTAINER_NAME
+)
 
 # Initialize Blob Service Client asynchronously
 async def get_blob_service_client() -> BlobServiceClient:
@@ -69,3 +76,18 @@ async def get_blob_size(blob_url: str) -> int:
     
     props = await blob_client.get_blob_properties()
     return props.size
+
+async def generate_sas_url(blob_url: str, expiry_minutes: int = 60) -> str:
+    """Generate a read-only SAS URL for a blob."""
+    blob_client = BlobClient.from_blob_url(blob_url)
+
+    sas_token = generate_blob_sas(
+        account_name=AZURE_STORAGE_ACCOUNT_NAME,
+        container_name=AZURE_BLOB_CONTAINER_NAME,
+        blob_name=blob_client.blob_name,
+        account_key=AZURE_STORAGE_ACCOUNT_KEY,
+        permission=BlobSasPermissions(read=True),
+        expiry=datetime.utcnow() + timedelta(minutes=expiry_minutes),
+    )
+
+    return f"{blob_url}?{sas_token}"

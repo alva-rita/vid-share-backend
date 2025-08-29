@@ -18,7 +18,11 @@ async def list_latest_videos(
 ):
     """List the latest videos. Accessible by any authenticated user."""
     videos = await crud.get_videos(conn, skip=skip, limit=limit)
-    return [schemas.Video(**video) for video in videos]
+    res_videos = []
+    for video in videos:
+        video["stream_url"] = await blob_storage.generate_sas_url(video["blob_url"])
+        res_videos.append(schemas.Video(**video))
+    return res_videos #[schemas.Video(**video) for video in videos]
 
 @router.get("/{video_id}", response_model=schemas.Video)
 async def get_video_metadata(
@@ -30,6 +34,9 @@ async def get_video_metadata(
     db_video = await crud.get_video(conn, video_id=video_id)
     if db_video is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Video not found")
+    
+    db_video["stream_url"] = await blob_storage.generate_sas_url(db_video["blob_url"])
+
     return schemas.Video(**db_video)
 
 @router.get("/{video_id}/stream")

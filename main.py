@@ -25,7 +25,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://shiny-space-dollop-gv4qx5pgg552v74g-8080.app.github.dev"],          # or ["*"] to allow all
+    allow_origins=["*"],          # or ["*"] to allow all
     allow_credentials=False,
     allow_methods=["*"],            # GET, POST, PUT, DELETE, etc.
     allow_headers=["*"],            # Allow all headers
