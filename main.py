@@ -38,7 +38,7 @@ app.include_router(consumers.router, prefix="/videos", tags=["Consumers"])
 app.include_router(admin.router, prefix="/admin", tags=["Admin"])
 
 
-@app.get("/health")
+@app.get("/")
 async def root():
     return {"message": "Welcome to the Video Sharing Platform API"}
 
