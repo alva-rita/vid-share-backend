@@ -2,7 +2,7 @@
 import uvicorn
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
-import asyncpg
+from fastapi.middleware.cors import CORSMiddleware
 from app.database import startup_database, shutdown_database
 from app.routers import auth, creators, consumers, admin
 
@@ -21,6 +21,14 @@ app = FastAPI(
     description="A video platform with Azure PostgreSQL backend",
     version="2.0.0",
     lifespan=lifespan
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["https://shiny-space-dollop-gv4qx5pgg552v74g-8080.app.github.dev"],          # or ["*"] to allow all
+    allow_credentials=False,
+    allow_methods=["*"],            # GET, POST, PUT, DELETE, etc.
+    allow_headers=["*"],            # Allow all headers
 )
 
 # Include routers
