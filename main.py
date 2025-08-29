@@ -1,5 +1,6 @@
 # main.py
 import uvicorn
+import os
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
@@ -42,6 +43,6 @@ app.include_router(admin.router, prefix="/admin", tags=["Admin"])
 async def root():
     return {"message": "Welcome to the Video Sharing Platform API"}
 
-# You can run this file using: uvicorn main:app --reload
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    port = int(os.environ.get("PORT", 8000))  # Azure sets PORT
+    uvicorn.run("main:app", host="0.0.0.0", port=port, reload=True)
