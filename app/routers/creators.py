@@ -3,8 +3,8 @@ from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File
 from sqlalchemy.orm import Session
 from typing import List, Optional
 
-import crud, schemas, auth_utils, models, blob_storage
-from database import get_db
+from app import crud, schemas, auth_utils, models, blob_storage
+from app.database import get_db
 
 router = APIRouter()
 

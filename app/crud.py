@@ -2,8 +2,8 @@
 from sqlalchemy.orm import Session
 from typing import Optional
 from sqlalchemy import func
-import models, schemas
-from auth_utils import get_password_hash
+from app import models, schemas
+from app.auth_utils import get_password_hash
 
 # --- User CRUD ---
 def get_user(db: Session, user_id: int):

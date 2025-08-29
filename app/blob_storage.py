@@ -4,7 +4,7 @@ from azure.storage.blob.aio import BlobServiceClient, BlobClient, ContainerClien
 from fastapi import UploadFile
 import uuid
 
-from config import AZURE_STORAGE_CONNECTION_STRING, AZURE_BLOB_CONTAINER_NAME
+from app.config import AZURE_STORAGE_CONNECTION_STRING, AZURE_BLOB_CONTAINER_NAME
 
 # Initialize Blob Service Client asynchronously
 async def get_blob_service_client() -> BlobServiceClient:

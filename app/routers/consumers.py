@@ -4,8 +4,8 @@ from sqlalchemy.orm import Session
 from typing import List, Optional
 from starlette.responses import StreamingResponse
 
-import crud, schemas, auth_utils, models, blob_storage
-from database import get_db
+from app import crud, schemas, auth_utils, models, blob_storage
+from app.database import get_db
 
 router = APIRouter()
 

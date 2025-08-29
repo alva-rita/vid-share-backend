@@ -1,15 +1,13 @@
 # main.py
 import uvicorn
-from fastapi import FastAPI, Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordRequestForm
-from sqlalchemy.orm import Session
+from fastapi import FastAPI
 
-import crud, models, schemas, auth_utils
-from database import engine, get_db
-from routers import auth, creators, consumers, admin
+from app import models
+from app.database import engine, get_db
+from app.routers import auth, creators, consumers, admin
 
 # Create database tables
-# models.Base.metadata.create_all(bind=engine)
+models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Video Sharing Platform Backend")
 
