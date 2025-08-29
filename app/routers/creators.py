@@ -1,10 +1,10 @@
 # routers/creators.py
 from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File
-from sqlalchemy.orm import Session
+import asyncpg
 from typing import List, Optional
 
-from app import crud, schemas, auth_utils, models, blob_storage
-from app.database import get_db
+from app import crud, schemas, auth_utils, blob_storage
+from app.database import get_db_connection
 
 router = APIRouter()
 
@@ -15,8 +15,8 @@ async def upload_video(
     file: UploadFile = File(...),
     description: Optional[str] = None,
     thumbnail: Optional[UploadFile] = File(None),
-    current_user: models.User = Depends(auth_utils.get_current_active_user),
-    db: Session = Depends(get_db)
+    current_user: dict = Depends(auth_utils.get_current_active_user),
+    conn: asyncpg.Connection = Depends(get_db_connection)
 ):
     """Upload a video file and its metadata. Requires 'creator' role."""
     # Upload video to blob storage
@@ -27,24 +27,24 @@ async def upload_video(
         # Upload thumbnail to blob storage
         thumbnail_blob_url = await blob_storage.upload_file_to_blob(thumbnail, file_type="thumbnail")
     
-    video_create = schemas.VideoCreate(title=title, description=description)
-    db_video = crud.create_video(
-        db=db,
-        video=video_create,
-        owner_id=current_user.id,
+    db_video = await crud.create_video(
+        conn=conn,
+        title=title,
+        description=description,
         blob_url=video_blob_url,
+        owner_id=current_user["id"],  # Access dict key instead of attribute
         thumbnail_url=thumbnail_blob_url
     )
-    return db_video
+    return schemas.Video(**db_video)
 
 @router.get("/studio", response_model=List[schemas.Video],
              dependencies=[Depends(auth_utils.require_creator)])
 async def list_creator_videos(
-    current_user: models.User = Depends(auth_utils.get_current_active_user),
-    db: Session = Depends(get_db),
+    current_user: dict = Depends(auth_utils.get_current_active_user),
+    conn: asyncpg.Connection = Depends(get_db_connection),
     skip: int = 0,
     limit: int = 10
 ):
     """List videos uploaded by the current creator. Requires 'creator' role."""
-    videos = crud.get_creator_videos(db, owner_id=current_user.id, skip=skip, limit=limit)
-    return videos
+    videos = await crud.get_creator_videos(conn, owner_id=current_user["id"], skip=skip, limit=limit)
+    return [schemas.Video(**video) for video in videos]

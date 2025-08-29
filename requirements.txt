@@ -8,3 +8,10 @@ passlib[bcrypt]==1.7.4
 azure-storage-blob==12.19.1
 asyncio==3.4.3
 pydantic-settings==2.10.1
+asyncpg==0.30.0
+
+export PGHOST=assigment.postgres.database.azure.com
+export PGUSER=Rita
+export PGPORT=5432
+export PGDATABASE=postgres
+export PGPASSWORD="your-actual-password"

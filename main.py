@@ -1,15 +1,27 @@
 # main.py
 import uvicorn
 from fastapi import FastAPI
-
-from app import models
-from app.database import engine, get_db
+from contextlib import asynccontextmanager
+import asyncpg
+from app.database import startup_database, shutdown_database
 from app.routers import auth, creators, consumers, admin
 
 # Create database tables
-models.Base.metadata.create_all(bind=engine)
+# models.Base.metadata.create_all(bind=engine)
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
+    await startup_database()
+    yield
 
-app = FastAPI(title="Video Sharing Platform Backend")
+    await shutdown_database()
+
+app = FastAPI(
+    title="Video Platform API",
+    description="A video platform with Azure PostgreSQL backend",
+    version="2.0.0",
+    lifespan=lifespan
+)
 
 # Include routers
 app.include_router(auth.router, prefix="/auth", tags=["Auth"])

@@ -11,6 +11,11 @@ class Settings(BaseSettings):
     database_url: str
     azure_storage_connection_string: str
     azure_blob_container_name: str
+    pghost: str
+    pguser: str
+    pgport: str
+    pgdatabase: str
+    pgpassword: str 
 
     class Config:
         env_file = ".env"
